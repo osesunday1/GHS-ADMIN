@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montagu+Slab:opsz,wght@16..144,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --font-primary: "Poppins", "serif";
+  --color-mint-500: oklch(0.72 0.11 178);
+  --color-primary:#ffffff;
+  --color-primary-100:#f2f6f7;
+  --color-secondary:#ff5a3c;
+  --color-secondary-100:#ffebe7;
+  --color-secondary-200:#fa684d;
+}
+
+*{
+  font-family:Outfit;
+}
+
