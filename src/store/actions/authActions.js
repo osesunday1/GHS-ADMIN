@@ -4,7 +4,7 @@ import { LOGIN_SUCCESS, LOGOUT, AUTH_ERROR } from '../types/types';
 export const loginUser = ({ email, password }) => async dispatch => {
   try {
     const res = await axios.post(
-      `https://ghsapartment-8b6109df7c25.herokuapp.com/api/v1/users/login`,
+      `${import.meta.env.VITE_BACKEND_URL}/v1/users/login`,
       { email, password },
       {
         withCredentials: true,
