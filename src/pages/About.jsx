@@ -3,11 +3,11 @@ import NearbyAccordion from '../features/About/NearbyAccordion';
 
 const About = () => {
   return (
-    <div>
+    <>
       <AboutIntro />
       <NearbyAccordion/>
       {/* Other sections here */}
-    </div>
+    </>
   );
 };
 
