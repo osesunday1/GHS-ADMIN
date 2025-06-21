@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBed, FaCity, FaCouch, FaKey } from 'react-icons/fa';
-import img01 from '../../assets/images/home/01.jpg';
-import img02 from '../../assets/images/home/02.jpg';
-import img03 from '../../assets/images/home/03.jpg';
-import img04 from '../../assets/images/home/04.jpg';
+import img01 from '../../assets/images/home/01.JPG';
+import img02 from '../../assets/images/home/02.JPG';
+import img03 from '../../assets/images/home/03.JPG';
+import img04 from '../../assets/images/home/04.JPG';
 import Modal from '../../components/common/Modal';
 
 const slides = [
