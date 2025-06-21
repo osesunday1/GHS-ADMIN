@@ -6,7 +6,7 @@ import {
 } from '../types/types';
 
 // Base URL
-const BASE_URL = 'http://localhost:5000/api/v1/bookings';
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/bookings`;
 
 // Get token helper
 const getTokenConfig = (isMultipart = false) => {

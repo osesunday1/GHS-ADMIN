@@ -17,7 +17,7 @@ import {
   DELETE_APARTMENT_FAIL
 } from '../types/types';
 
-const API_URL = 'http://localhost:5000/api/v1/apartments';
+const API_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/apartments`;
 const getToken = () => localStorage.getItem('authToken');
 
 // Get all apartments

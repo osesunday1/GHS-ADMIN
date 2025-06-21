@@ -8,7 +8,8 @@ import {
   UPDATE_GUEST_FAIL,
 } from '../types/types';
 
-const BASE_URL = 'http://localhost:5000/api/v1/guests';
+
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/guests`;
 
 const getTokenConfig = (isMultipart = false) => {
   const token = localStorage.getItem('authToken');

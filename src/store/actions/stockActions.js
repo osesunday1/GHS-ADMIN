@@ -8,7 +8,8 @@ import {
   GET_STOCK_LOGS_FAIL,
 } from '../types/types';
 
-const BASE_URL = 'http://localhost:5000/api/v1/stock';
+
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/stock`;
 
 const getTokenConfig = () => {
   const token = localStorage.getItem('authToken');

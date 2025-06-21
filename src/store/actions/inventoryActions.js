@@ -8,7 +8,8 @@ import {
   UPDATE_PRODUCT_SUCCESS
 } from '../types/types';
 
-const BASE_URL = 'http://localhost:5000/api/v1/product';
+
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/product`;
 
 const getTokenConfig = () => {
   const token = localStorage.getItem('authToken');
