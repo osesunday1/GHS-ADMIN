@@ -15,6 +15,9 @@ import Inventory from '../features/Dashboard/Market/Inventory';
 import AddInventory from '../features/Dashboard/Market/AddInventory';
 import SellProduct from '../features/Dashboard/Market/SellProduct';
 import StockHistory from '../features/Dashboard/Market/StockHistory';
+import Expenses from '../features/Dashboard/expenses/Expenses';
+import AddExpense from '../features/Dashboard/expenses/AddExpense';
+
 
 const AppRoutes = () => {
   return (
@@ -30,6 +33,8 @@ const AppRoutes = () => {
           <Route path="inventory/add" element={<AddInventory />} />
           <Route path="inventory/sell" element={<SellProduct />} />
           <Route path="inventory/history" element={<StockHistory />} />
+          <Route path="expenses" element={<Expenses />} />
+          <Route path="expenses/add" element={<AddExpense />} />
           <Route path="apartments" element={<Apartments />} />
           <Route path="apartments/add" element={<AddApartment />} />
       </Route>

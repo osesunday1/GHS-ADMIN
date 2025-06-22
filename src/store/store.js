@@ -11,6 +11,7 @@ import apartmentsReducer from './reducers/apartmentReducer';
 import guestReducer from './reducers/guestReducer';
 import inventoryReducer from './reducers/inventoryReducer';
 import stockReducer from './reducers/stockReducer';
+import expenseReducer from './reducers/expenseReducer';
 
 
 const rootReducer = combineReducers({
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   guests:guestReducer,
   inventory: inventoryReducer,
   stock: stockReducer,
+  expenses: expenseReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

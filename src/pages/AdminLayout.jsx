@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FaTachometerAlt, FaCalendarAlt, FaBars, FaStore  } from 'react-icons/fa';
+import { FaTachometerAlt, FaCalendarAlt, FaBars, FaStore, FaMoneyBillWave } from 'react-icons/fa';
 import { FaHouse } from "react-icons/fa6";
 import { IoPersonSharp } from 'react-icons/io5';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
@@ -26,6 +26,14 @@ const adminLinks = [
       { label: 'Stock History', path: '/admin/inventory/history' },
     ],
     path: '/admin/inventory', 
+  },
+  {
+    label: 'Expenses',
+    icon: <FaMoneyBillWave />, // import this from react-icons/fa
+    children: [
+      { label: 'Expense List', path: '/admin/expenses' },
+      { label: 'Add Expense', path: '/admin/expenses/add' },
+    ],
   },
   { 
     label: 'Apartments', 
