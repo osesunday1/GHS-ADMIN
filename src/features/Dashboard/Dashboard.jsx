@@ -3,6 +3,7 @@ import DashboardTopBar from "../../components/DasboardChart/Topbar/DashboardTopB
 import Single1stLayer from "../../components/DasboardChart/SingleCharts/Single1stLayer";
 import Comp1stLayer from "../../components/DasboardChart/CompCharts/Comp1stLayer";
 import Single2ndLayer from "../../components/DasboardChart/SingleCharts/Single2ndLayer";
+import Single3rdLayer from "../../components/DasboardChart/SingleCharts/Single3rdLayer";
 const Dashboard = () => {
 
 
@@ -40,6 +41,7 @@ const Dashboard = () => {
         <>
         <Single1stLayer/>
         <Single2ndLayer/>
+        <Single3rdLayer/>
         </>
       ) : (
         (<Comp1stLayer />)

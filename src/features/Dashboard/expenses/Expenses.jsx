@@ -16,7 +16,7 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense }) => {
 
     //pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const expensePerPage = 13;
+  const expensePerPage = 11;
   const indexOfLastExpense = currentPage * expensePerPage;
   const indexOfFirstExpense = indexOfLastExpense - expensePerPage;
   const currentExpense = expenses.slice(indexOfFirstExpense, indexOfLastExpense);
