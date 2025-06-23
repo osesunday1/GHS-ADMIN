@@ -12,6 +12,15 @@ import guestReducer from './reducers/guestReducer';
 import inventoryReducer from './reducers/inventoryReducer';
 import stockReducer from './reducers/stockReducer';
 import expenseReducer from './reducers/expenseReducer';
+import totalBookingsReducer from './reducers/dashboard/totalBookingsReducer'
+import totalRevenueReducer from './reducers/dashboard/totalRevenueReducer';
+import averageLengthStayReducer from './reducers/dashboard/averageLengthStayReducer';
+import repeatGuestReducer from './reducers/dashboard/repeatGuestReducer';
+import revenuePerApartmentReducer from './reducers/dashboard/revenuePerApartmentReducer';
+import topProductsReducer from './reducers/dashboard/topProductsReducer';
+import lowStockReducer from './reducers/dashboard/lowStockReducer';
+import expensesReducer from './reducers/dashboard/expensesReducer'; 
+
 
 
 const rootReducer = combineReducers({
@@ -22,6 +31,14 @@ const rootReducer = combineReducers({
   inventory: inventoryReducer,
   stock: stockReducer,
   expenses: expenseReducer,
+  totalBookings:totalBookingsReducer,
+  totalRevenue: totalRevenueReducer,
+  averageLengthStay: averageLengthStayReducer,
+  repeatGuest: repeatGuestReducer,
+  revenuePerApartment: revenuePerApartmentReducer,
+  topProducts: topProductsReducer,
+  lowStock: lowStockReducer,
+  expenseDashboard: expensesReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

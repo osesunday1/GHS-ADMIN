@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-const TopTurnoverChart = ({ data = [], colors = [] }) => {
+const LowStockChart = ({ data = [], colors = [] }) => {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -68,4 +68,4 @@ const TopTurnoverChart = ({ data = [], colors = [] }) => {
   return <svg ref={svgRef}></svg>;
 };
 
-export default TopTurnoverChart;
+export default LowStockChart;

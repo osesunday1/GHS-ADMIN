@@ -9,7 +9,6 @@ const DashboardTopBar = ({
   onFilterChange, 
 }) => {
   
-console.log('filters: ', filters)
 
     // Handle previous/next date navigation
   const handleDateShift = (direction) => {

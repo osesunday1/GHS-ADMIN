@@ -47,8 +47,8 @@ const ApartmentRevenueChart = ({ data, colors }) => {
       .text(d => `${d.data.percentage}%`)
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .style('text-anchor', 'middle')
-      .style('fill', 'white')
-      .style('font-size', '14px')
+      .style('fill', 'black')
+      .style('font-size', '12px')
       .style('font-weight', 'bold');
 
   }, [data, colors]);

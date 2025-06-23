@@ -39,9 +39,9 @@ const Dashboard = () => {
       
       {!filters.compareMode ? (
         <>
-        <Single1stLayer/>
-        <Single2ndLayer/>
-        <Single3rdLayer/>
+        <Single1stLayer filters={filters}/>
+        <Single2ndLayer filters={filters}/>
+        <Single3rdLayer filters={filters}/>
         </>
       ) : (
         (<Comp1stLayer />)

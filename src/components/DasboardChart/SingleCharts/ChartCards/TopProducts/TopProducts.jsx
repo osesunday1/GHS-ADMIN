@@ -1,22 +1,38 @@
+import { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { getTopProducts } from '../../../../../store/actions/dashboard/topProductsActions';
 import UtilityCard from '../../Tempates/UtilityCard';
 import TopProductsChart from './TopProductsChart';
 
-const productData = [
-  { name: 'Toothpaste', count: 120 },
-  { name: 'Shampoo', count: 90 },
-  { name: 'Body Soap', count: 75 },
-  { name: 'Lotion', count: 60 },
-  { name: 'Toilet Paper', count: 40 },
-];
-
 const colors = ['#4dabf7', '#845ef7', '#ff6b6b', '#20c997', '#ffc107'];
 
-const TopProducts = () => {
+const TopProducts = ({ filters, getTopProducts, topProducts, loading }) => {
+  useEffect(() => {
+    if (filters?.dateRange?.start && filters?.dateRange?.end) {
+      getTopProducts(filters.dateRange.start, filters.dateRange.end);
+    }
+  }, [getTopProducts, filters]);
+
+  const chartData = topProducts.map(p => ({
+    name: p.name,
+    count: p.totalQuantitySold
+  }));
+
   return (
     <UtilityCard title="Top Products Sold" maxWidth="395px">
-      <TopProductsChart data={productData} colors={colors} />
+      {loading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : (
+        <TopProductsChart data={chartData} colors={colors} />
+      )}
     </UtilityCard>
   );
 };
 
-export default TopProducts;
+const mapStateToProps = (state) => ({
+  topProducts: state.topProducts.topProducts,
+  loading: state.topProducts.loading,
+  error: state.topProducts.error,
+});
+
+export default connect(mapStateToProps, { getTopProducts })(TopProducts);
