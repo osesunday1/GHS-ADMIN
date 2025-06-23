@@ -13,7 +13,6 @@ const AddBooking = ({ apartments, getApartments }) => {
     lastName: '',
     email: '',
     phone: '',
-    address: '',
     checkInDate: '',
     checkOutDate: '',
     apartmentId: '',
@@ -68,7 +67,6 @@ const handleSubmit = async (e) => {
           <input name="lastName" placeholder="Last Name" className="p-2 border rounded" value={formData.lastName} onChange={handleChange} required />
           <input name="email" placeholder="Email" type="email" className="p-2 border rounded col-span-2" value={formData.email} onChange={handleChange}  />
           <input name="phone" placeholder="Phone" className="p-2 border rounded col-span-2" value={formData.phone} onChange={handleChange}  />
-          <input name="address" placeholder="Address" className="p-2 border rounded col-span-2" value={formData.address} onChange={handleChange}  />
         </div>
 
         {/* Booking Info */}
