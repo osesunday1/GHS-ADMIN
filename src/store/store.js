@@ -14,6 +14,7 @@ import stockReducer from './reducers/stockReducer';
 import expenseReducer from './reducers/expenseReducer';
 import totalBookingsReducer from './reducers/dashboard/totalBookingsReducer'
 import totalRevenueReducer from './reducers/dashboard/totalRevenueReducer';
+import marketProfitReducer from './reducers/dashboard/marketProfitReducer';
 import averageLengthStayReducer from './reducers/dashboard/averageLengthStayReducer';
 import repeatGuestReducer from './reducers/dashboard/repeatGuestReducer';
 import revenuePerApartmentReducer from './reducers/dashboard/revenuePerApartmentReducer';
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   expenses: expenseReducer,
   totalBookings:totalBookingsReducer,
   totalRevenue: totalRevenueReducer,
+  marketProfit: marketProfitReducer,
   averageLengthStay: averageLengthStayReducer,
   repeatGuest: repeatGuestReducer,
   revenuePerApartment: revenuePerApartmentReducer,
