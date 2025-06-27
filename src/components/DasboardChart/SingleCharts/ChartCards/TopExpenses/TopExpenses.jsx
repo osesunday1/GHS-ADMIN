@@ -5,13 +5,12 @@ import Box from '../../Tempates/Box';
 import TopExpensesChart from './TopExpensesChart';
 import { getTotalExpenses } from '../../../../../store/actions/dashboard/expensesActions';
 
-const TopExpenses = ({ breakdown = [], loading, getTotalExpenses }) => {
+const TopExpenses = ({ filters, breakdown = [], loading, getTotalExpenses }) => {
   useEffect(() => {
-    const today = new Date();
-    const end = today.toISOString().split('T')[0];
-    const start = new Date(today.setMonth(today.getMonth() - 1)).toISOString().split('T')[0];
-    getTotalExpenses(start, end);
-  }, [getTotalExpenses]);
+    if (filters?.dateRange?.start && filters?.dateRange?.end) {
+    getTotalExpenses(filters.dateRange.start, filters.dateRange.end);
+    }
+  }, [getTotalExpenses, filters]);
 
   const colors = ['#6c5ce7', '#00cec9', '#e17055', '#fd79a8', '#ffc107', '#ff9f43'];
 
