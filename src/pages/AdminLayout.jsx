@@ -193,7 +193,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-primary-100 overflow-y-auto">
+      <main className="flex-1 p-6 bg-primary-100">
         <Outlet />
       </main>
     </div>
