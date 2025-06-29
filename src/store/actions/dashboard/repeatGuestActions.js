@@ -7,7 +7,7 @@ import {
 
 const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/admin/repeatGuest`;
 
-export const getRepeatGuests = () => async (dispatch) => {
+export const getRepeatGuests = (start, end) => async (dispatch) => {
   try {
     dispatch({ type: GET_REPEAT_GUESTS_REQUEST });
 
@@ -15,7 +15,8 @@ export const getRepeatGuests = () => async (dispatch) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`
-      }
+      },
+      params: { start, end } 
     };
 
     const res = await axios.get(BASE_URL, config);

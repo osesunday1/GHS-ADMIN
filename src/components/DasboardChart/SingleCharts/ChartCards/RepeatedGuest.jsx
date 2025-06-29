@@ -5,18 +5,21 @@ import InfoCard from '../Tempates/InfoCard';
 import { FaBath } from 'react-icons/fa';
 import CountUp from 'react-countup';
 
-const RepeatedGuest = ({ getRepeatGuests, repeatGuestData, loading }) => {
+const RepeatedGuest = ({ filters, getRepeatGuests, repeatGuestData, loading }) => {
   useEffect(() => {
-    getRepeatGuests();
-  }, [getRepeatGuests]);
+    if (filters?.dateRange?.start && filters?.dateRange?.end) {
+      getRepeatGuests(filters.dateRange.start, filters.dateRange.end);
+    }
+  }, [filters, getRepeatGuests]);
 
   const total = repeatGuestData?.repeatGuestCount ?? 0;
 
   return (
     <div>
       <InfoCard 
-        title="Repeated Guest" 
-        amount={loading ? '...' : (
+        title="Repeated Guests" 
+        amount={
+          loading ? '...' : (
             <CountUp
               end={total}
               duration={1}
@@ -24,7 +27,6 @@ const RepeatedGuest = ({ getRepeatGuests, repeatGuestData, loading }) => {
               preserveValue={true}
             />
           )
-
         }
         icon={<FaBath className="text-white text-xl" />} 
       />
