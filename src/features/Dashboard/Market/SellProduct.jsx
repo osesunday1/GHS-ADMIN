@@ -48,7 +48,7 @@ const SellProduct = ({ products, removeMultipleStock , getProducts, guests, getG
     };
 
   return (
-    <div className="bg-white p-6 rounded shadow">
+    <div className="bg-white p-6 rounded shadow max-w-xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Sell Multiple Products</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

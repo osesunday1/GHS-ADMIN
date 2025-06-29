@@ -40,7 +40,7 @@ const AddInventory = ({ addProduct, getProducts }) => {
   };
 
   return (
-     <div className="bg-white p-6 rounded shadow">
+     <div className="bg-white p-6 rounded shadow max-w-xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Add Product</h2>
     <form onSubmit={handleSubmit} className="mb-6 grid grid-cols-2 gap-4">
       <input name="name" placeholder="Name" value={formData.name} onChange={handleChange} className="p-2 border rounded" required />
