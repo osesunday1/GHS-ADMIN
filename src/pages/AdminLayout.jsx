@@ -79,7 +79,7 @@ const AdminLayout = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside
-        className={`relative bg-white transition-all duration-300 flex flex-col ${
+        className={`fixed h-screen bg-secondary-100 transition-all duration-300 flex flex-col ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
