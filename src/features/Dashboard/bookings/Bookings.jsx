@@ -7,6 +7,7 @@ import { useState } from 'react';
 import EditBooking from './EditBooking';
 import ViewBooking from './ViewBooking';
 import GeneralModal from '../../../components/common/GeneralModal';
+import Box from '../../../components/DasboardChart/SingleCharts/Tempates/Box'
 
 
 
@@ -65,6 +66,21 @@ const confirmDelete = async () => {
   }
 };
 
+
+//status helper function
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'upcoming':
+      return { color: '#3498db', label: 'Upcoming' }; // blue
+    case 'checked-in':
+      return { color: '#2ecc71', label: 'Checked-In' }; // green
+    case 'checked-out':
+      return { color: '#e74c3c', label: 'Checked-Out' }; // red
+    default:
+      return { color: '#bdc3c7', label: 'Unknown' }; // grey
+  }
+};
+
   return (
     <div className="bg-white p-6 rounded shadow max-w-[1200px] mx-auto">
       <h2 className="text-xl font-bold mb-4 text-secondary">All Bookings</h2>
@@ -82,6 +98,7 @@ const confirmDelete = async () => {
                 <th className="py-2 px-4 border-b">Apartment</th>
                 <th className="py-2 px-4 border-b">Check-In</th>
                 <th className="py-2 px-4 border-b">Check-Out</th>
+                <th className="py-2 px-4 border-b">Status</th>
                 <th className="py-2 px-4 border-b">Days</th>
                 <th className="py-2 px-4 border-b">Rooms</th>
                 <th className="py-2 px-4 border-b">Amount Paid</th>
@@ -104,6 +121,26 @@ const confirmDelete = async () => {
                     </td>
                     <td className="py-5 px-4 ">
                       {new Date(booking.checkOutDate).toLocaleDateString('en-CA', { timeZone: 'UTC' })}
+                    </td>
+                    <td className="py-5 px-4">
+                      {(() => {
+                        const status = booking.bookingStatus;
+                        let color = '#bdc3c7'; // default gray
+                        let label = 'Unknown';
+
+                        if (status === 'upcoming') {
+                          color = '#3498db';
+                          label = 'upcoming';
+                        } else if (status === 'in') {
+                          color = '#2ecc71';
+                          label = 'in';
+                        } else if (status === 'out') {
+                          color = '#e74c3c';
+                          label = 'out';
+                        }
+
+                        return <Box color={color} text={label} />;
+                      })()}
                     </td>
                     <td className="py-5 px-4 text-center">{booking.numberOfDays}</td>
                     <td className="py-5 px-4 text-center">{booking.numberOfRooms}</td>
