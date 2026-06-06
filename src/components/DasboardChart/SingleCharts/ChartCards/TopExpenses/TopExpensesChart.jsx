@@ -1,87 +1,69 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const TopExpensesChart = ({ data, colors }) => {
   const svgRef = useRef();
-  const [hoveredItem, setHoveredItem] = useState(null);
 
   useEffect(() => {
-    const width = 350;
-    const height = 170;
-    const innerRadius = 110;
-    const outerRadius = 150;
+    const width = 370;
+    const barHeight = 60;
+    const height = data.length * barHeight + 40;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
 
-    const g = svg
-      .attr('width', width)
-      .attr('height', height + 10)
-      .append('g')
-      .attr('transform', `translate(${width / 2}, ${height})`);
+    svg.attr('width', width).attr('height', height);
 
-    const pie = d3
-      .pie()
-      .startAngle(-Math.PI / 2)
-      .endAngle(Math.PI / 2)
-      .value(d => d.amount)
-      .sort(null)
-      .padAngle(0.03);
+    const margin = { top: 20, right: 80, bottom: 30, left: 110 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
 
-    const arc = d3
-      .arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius)
-      .cornerRadius(5);
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.amount) || 1])
+      .range([0, chartWidth]);
 
-    const dataReady = pie(data);
+    const y = d3.scaleBand()
+      .domain(data.map(d => d.title))
+      .range([0, chartHeight])
+      .padding(0.4);
 
-    g.selectAll('path')
-      .data(dataReady)
+    const g = svg.append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    g.selectAll('rect')
+      .data(data)
       .enter()
-      .append('path')
-      .attr('d', arc)
-      .attr('fill', (d, i) => colors[i])
-      .style('cursor', 'pointer')
-      .on('mouseover', function (event, d) {
-        setHoveredItem(d.data.title);
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr('transform', function () {
-            const [x, y] = arc.centroid(d);
-            return `translate(${x * 0.1}, ${y * 0.1})`;
-          });
-      })
-      .on('mouseout', function () {
-        setHoveredItem(null);
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr('transform', 'translate(0,0)');
-      });
+      .append('rect')
+      .attr('y', d => y(d.title))
+      .attr('x', 0)
+      .attr('rx', 6)
+      .attr('height', y.bandwidth())
+      .attr('width', 0)
+      .attr('fill', (d, i) => colors[i % colors.length])
+      .transition()
+      .duration(1000)
+      .attr('width', d => x(d.amount));
 
-    // Center label
-    g.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-2.5em')
-      .style('font-size', '16px')
-      .style('font-weight', 'bold')
-      .text(hoveredItem || 'Total Spent');
+    g.selectAll('text.value')
+      .data(data)
+      .enter()
+      .append('text')
+      .attr('class', 'value')
+      .text(d => `₦${d.amount.toLocaleString()}`)
+      .attr('x', d => x(d.amount) + 6)
+      .attr('y', d => y(d.title) + y.bandwidth() / 1.6)
+      .attr('fill', '#6b7280')
+      .attr('font-size', '11px');
 
-    g.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-0.7em')
-      .style('font-size', '20px')
-      .style('font-weight', 'bold')
-      .text(data.reduce((sum, d) => sum + d.amount, 0).toLocaleString());
+    g.append('g')
+      .call(d3.axisLeft(y))
+      .selectAll('text')
+      .attr('font-size', '13px')
+      .attr('fill', '#374151');
 
-  }, [data, colors, hoveredItem]);
+  }, [data, colors]);
 
-   return (
-<div style={{ borderRadius: '12px', marginTop: '-20px' }}>
- <svg ref={svgRef} />
-  </div>)
+  return <svg ref={svgRef} />;
 };
 
 export default TopExpensesChart;

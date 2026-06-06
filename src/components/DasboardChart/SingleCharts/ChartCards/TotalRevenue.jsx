@@ -15,22 +15,13 @@ const TotalRevenue = ({ filters, getTotalRevenue, totalRevenueData, loading }) =
   const total = totalRevenueData?.totalExpectedRevenue ?? 0;
 
   return (
-    <div>
-      <InfoCard 
-        title="Total Revenue (₦)" 
-        amount={
-          loading ? '...' : (
-            <CountUp
-              end={total}
-              duration={1}
-              separator=","
-              preserveValue={true}
-            />
-          )
-        }
-        icon={<FaMoneyBillWaveAlt className="text-white text-xl" />} 
-      />
-    </div>
+    <InfoCard
+      title="Total Revenue"
+      color="green"
+      icon={<FaMoneyBillWaveAlt />}
+      amount={loading ? '—' : <><span className="text-xl font-semibold">₦</span><CountUp end={total} duration={1.2} separator="," preserveValue /></>}
+      subtitle="expected revenue"
+    />
   );
 };
 

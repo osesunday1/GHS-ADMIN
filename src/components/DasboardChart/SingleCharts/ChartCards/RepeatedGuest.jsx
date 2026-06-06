@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getRepeatGuests } from '../../../../store/actions/dashboard/repeatGuestActions';
 import InfoCard from '../Tempates/InfoCard';
-import { FaBath } from 'react-icons/fa';
+import { FaUserFriends } from 'react-icons/fa';
 import CountUp from 'react-countup';
 
 const RepeatedGuest = ({ filters, getRepeatGuests, repeatGuestData, loading }) => {
@@ -15,22 +15,13 @@ const RepeatedGuest = ({ filters, getRepeatGuests, repeatGuestData, loading }) =
   const total = repeatGuestData?.repeatGuestCount ?? 0;
 
   return (
-    <div>
-      <InfoCard 
-        title="Repeated Guests" 
-        amount={
-          loading ? '...' : (
-            <CountUp
-              end={total}
-              duration={1}
-              separator=","
-              preserveValue={true}
-            />
-          )
-        }
-        icon={<FaBath className="text-white text-xl" />} 
-      />
-    </div>
+    <InfoCard
+      title="Repeat Guests"
+      color="orange"
+      icon={<FaUserFriends />}
+      amount={loading ? '—' : <CountUp end={total} duration={1.2} separator="," preserveValue />}
+      subtitle="returning guests"
+    />
   );
 };
 

@@ -79,7 +79,7 @@ const AdminLayout = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside
-        className={`fixed h-screen bg-secondary-100 transition-all duration-300 flex flex-col ${
+        className={`flex-shrink-0 h-screen sticky top-0 bg-secondary-100 transition-all duration-300 flex flex-col overflow-y-auto ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -193,7 +193,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-primary-100">
+      <main className="flex-1 p-6 bg-primary-100 overflow-y-auto">
         <Outlet />
       </main>
     </div>

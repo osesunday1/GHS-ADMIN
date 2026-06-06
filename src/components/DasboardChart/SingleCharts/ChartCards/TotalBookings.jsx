@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getTotalBookings } from '../../../../store/actions/dashboard/totalBookingsActions';
 import InfoCard from '../Tempates/InfoCard';
-import { FaClipboard } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa';
 import CountUp from 'react-countup';
 
 const TotalBooking = ({ filters, getTotalBookings, totalBookingsData, loading }) => {
@@ -15,21 +15,13 @@ const TotalBooking = ({ filters, getTotalBookings, totalBookingsData, loading })
   const total = totalBookingsData?.totalBookings ?? 0;
 
   return (
-    <div>
-      <InfoCard 
-        title="Total Bookings" 
-        amount={
-          loading ? '...' : (
-            <CountUp
-              end={total}
-              duration={1.5}
-              separator=","
-              preserveValue={true}
-            />
-          )} 
-        icon={<FaClipboard className="text-white text-xl" />} 
-      />
-    </div>
+    <InfoCard
+      title="Total Bookings"
+      color="blue"
+      icon={<FaCalendarAlt />}
+      amount={loading ? '—' : <CountUp end={total} duration={1.2} separator="," preserveValue />}
+      subtitle="reservations"
+    />
   );
 };
 

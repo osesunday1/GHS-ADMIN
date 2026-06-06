@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getAverageLengthStay } from '../../../../store/actions/dashboard/averageLengthStayActions';
 import InfoCard from '../Tempates/InfoCard';
 import { FaBed } from 'react-icons/fa';
+import CountUp from 'react-countup';
 
 const AverageLengthStay = ({ filters, getAverageLengthStay, averageStayData, loading }) => {
   useEffect(() => {
@@ -14,13 +15,17 @@ const AverageLengthStay = ({ filters, getAverageLengthStay, averageStayData, loa
   const average = averageStayData?.averageLengthOfStay ?? 0;
 
   return (
-    <div>
-      <InfoCard 
-        title="Average Length Stay" 
-        amount={loading ? '...' : average.toFixed(1)} 
-        icon={<FaBed className="text-white text-xl" />} 
-      />
-    </div>
+    <InfoCard
+      title="Avg. Length of Stay"
+      color="teal"
+      icon={<FaBed />}
+      amount={
+        loading ? '—' : (
+          <CountUp end={average} duration={1.2} decimals={1} preserveValue />
+        )
+      }
+      subtitle="nights per booking"
+    />
   );
 };
 

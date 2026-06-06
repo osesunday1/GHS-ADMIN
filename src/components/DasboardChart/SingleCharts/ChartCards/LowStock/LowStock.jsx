@@ -2,30 +2,47 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getLowStockAlerts } from '../../../../../store/actions/dashboard/lowStockActions';
 import UtilityCard from '../../Tempates/UtilityCard';
-import Box from '../../Tempates/Box';
-import LowStockChart from './LowStockChart';
-
-const colors = ['#6c5ce7', '#00cec9', '#e17055', '#fd79a8', '#0984e3'];
 
 const LowStock = ({ getLowStockAlerts, lowStockProducts, loading }) => {
   useEffect(() => {
     getLowStockAlerts();
   }, [getLowStockAlerts]);
 
-  const chartData = lowStockProducts.map(p => ({
-    name: p.name,
-    turnoverRate: p.quantity // You can rename this if it's misleading
-  }));
-
   return (
-    <UtilityCard title="Low Stock" minWidth="790px">
-      <div className="flex flex-col items-center">
-        {loading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : (
-          <LowStockChart data={chartData} colors={colors} />
-        )}
-      </div>
+    <UtilityCard title="Low Stock Alerts" minWidth="390px">
+      {loading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : lowStockProducts.length === 0 ? (
+        <p className="text-gray-400 text-sm">All products are sufficiently stocked.</p>
+      ) : (
+        <div className="overflow-y-auto max-h-64">
+          <table className="w-full text-sm text-left">
+            <thead className="text-gray-500 border-b sticky top-0 bg-white">
+              <tr>
+                <th className="pb-2">Product</th>
+                <th className="pb-2 text-right">Qty</th>
+                <th className="pb-2 text-right">Reorder At</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-700">
+              {lowStockProducts.map((product, index) => (
+                <tr key={index} className="border-b last:border-b-0">
+                  <td className="py-3">
+                    <p className="font-medium">{product.name}</p>
+                    <p className="text-xs text-gray-400">{product.category}</p>
+                  </td>
+                  <td className="py-3 text-right font-semibold text-red-500">
+                    {product.quantity}
+                  </td>
+                  <td className="py-3 text-right text-gray-500">
+                    {product.reorderLevel}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </UtilityCard>
   );
 };

@@ -71,7 +71,7 @@ const DateRangeControls = ({ startDate, endDate, onDateChange, viewMode = 'day' 
             handleDayChange(date);
           }}
           dateFormat="dd-MM-yy"
-          className="border px-4 py-2 rounded text-center font-medium text-m w-64"
+          className="border border-gray-200 px-4 py-1.5 rounded-lg text-center text-sm font-medium w-56 focus:outline-none focus:ring-2 focus:ring-secondary"
           placeholderText="Select a day"
         />
       )}
@@ -84,7 +84,7 @@ const DateRangeControls = ({ startDate, endDate, onDateChange, viewMode = 'day' 
             handleWeekChange(date);
           }}
           dateFormat="dd-MM-yy"
-          className="border px-4 py-2 rounded text-center font-medium text-m w-64"
+          className="border border-gray-200 px-4 py-1.5 rounded-lg text-center text-sm font-medium w-56 focus:outline-none focus:ring-2 focus:ring-secondary"
           placeholderText="Select a week"
         />
       )}
@@ -96,7 +96,7 @@ const DateRangeControls = ({ startDate, endDate, onDateChange, viewMode = 'day' 
           endDate={range[1]}
           onChange={handleRangeChange}
           dateFormat="dd-MM-yy"
-          className="border px-4 py-2 rounded text-center font-medium text-m w-64"
+          className="border border-gray-200 px-4 py-1.5 rounded-lg text-center text-sm font-medium w-56 focus:outline-none focus:ring-2 focus:ring-secondary"
           placeholderText="Select date range"
         />
       )}
