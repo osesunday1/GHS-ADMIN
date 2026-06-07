@@ -5,6 +5,7 @@ const TopProductsChart = ({ data, colors }) => {
   const svgRef = useRef();
 
   useEffect(() => {
+    if (!data || data.length === 0) return;
     const width = 370;
     const barHeight = 60;
     const height = data.length * barHeight + 40;
@@ -66,6 +67,7 @@ const TopProductsChart = ({ data, colors }) => {
 
   }, [data, colors]);
 
+  if (!data || data.length === 0) return null;
   return <svg ref={svgRef} />;
 };
 

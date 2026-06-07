@@ -8,7 +8,7 @@ import GeneralModal from '../../../components/common/GeneralModal';
 const ViewBooking = ({ booking, isOpen, onClose }) => {
   const printRef = useRef();
 
-  if (!booking || !booking.guest) return null;
+  if (!isOpen || !booking || !booking.guest) return null;
 
   const handleDownloadPDF = async () => {
     const input = printRef.current;
@@ -57,9 +57,9 @@ const ViewBooking = ({ booking, isOpen, onClose }) => {
         <div style={{ display: 'flex', gap: '24px' }}>
           {/* Image */}
           <div style={{ flexShrink: 0 }}>
-            <a href={booking.guest.photo.url || guest} target="_blank" rel="noopener noreferrer">
+            <a href={booking.guest.photo?.url || guest} target="_blank" rel="noopener noreferrer">
                 <img
-                src={booking.guest.photo.url || guest}
+                src={booking.guest.photo?.url || guest}
                 alt="Guest"
                 style={{
                     width: '130px',

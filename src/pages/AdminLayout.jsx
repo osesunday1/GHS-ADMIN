@@ -79,8 +79,8 @@ const AdminLayout = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside
-        className={`flex-shrink-0 h-screen sticky top-0 bg-secondary-100 transition-all duration-300 flex flex-col overflow-y-auto ${
-          collapsed ? 'w-20' : 'w-64'
+        className={`flex-shrink-0 h-screen sticky top-0 bg-secondary-100 transition-all duration-300 flex flex-col ${
+          collapsed ? 'w-20' : 'w-64 overflow-y-auto'
         }`}
       >
         <button

@@ -20,7 +20,8 @@ import repeatGuestReducer from './reducers/dashboard/repeatGuestReducer';
 import revenuePerApartmentReducer from './reducers/dashboard/revenuePerApartmentReducer';
 import topProductsReducer from './reducers/dashboard/topProductsReducer';
 import lowStockReducer from './reducers/dashboard/lowStockReducer';
-import expensesReducer from './reducers/dashboard/expensesReducer'; 
+import expensesReducer from './reducers/dashboard/expensesReducer';
+import bookingStatusReducer from './reducers/dashboard/bookingStatusReducer';
 
 
 
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
   topProducts: topProductsReducer,
   lowStock: lowStockReducer,
   expenseDashboard: expensesReducer,
+  bookingStatus: bookingStatusReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

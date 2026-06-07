@@ -5,6 +5,9 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import { Provider } from 'react-redux';
 import store from './store/store.js';
+import { setupInterceptors } from './utils/axios.js';
+
+setupInterceptors(store);
 
 // ✅ createRoot and render App
 const root = ReactDOM.createRoot(document.getElementById('root'));

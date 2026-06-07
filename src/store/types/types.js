@@ -68,6 +68,11 @@ export const DELETE_EXPENSE_SUCCESS = 'DELETE_EXPENSE_SUCCESS';
 export const UPDATE_EXPENSE_SUCCESS = 'UPDATE_EXPENSE_SUCCESS';
 
 
+// booking status breakdown
+export const GET_BOOKING_STATUS_REQUEST = 'GET_BOOKING_STATUS_REQUEST';
+export const GET_BOOKING_STATUS_SUCCESS = 'GET_BOOKING_STATUS_SUCCESS';
+export const GET_BOOKING_STATUS_FAIL    = 'GET_BOOKING_STATUS_FAIL';
+
 ///////////////dashboard/////////////////////
 
 //booking dashboard

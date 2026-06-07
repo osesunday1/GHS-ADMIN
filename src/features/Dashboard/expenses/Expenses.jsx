@@ -1,38 +1,70 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getExpenses, deleteExpense } from '../../../store/actions/expenseActions';
 import EditExpense from './EditExpense';
 import GeneralModal from '../../../components/common/GeneralModal';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaSearch, FaReceipt } from 'react-icons/fa';
 
-const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense }) => {
+const CATEGORIES = ['all', 'utilities', 'logistics', 'salary', 'rent', 'maintenance', 'cleaning', 'miscellaneous'];
+
+const categoryStyle = {
+  utilities:     'bg-blue-100 text-blue-700',
+  logistics:     'bg-orange-100 text-orange-700',
+  salary:        'bg-green-100 text-green-700',
+  rent:          'bg-purple-100 text-purple-700',
+  maintenance:   'bg-yellow-100 text-yellow-700',
+  cleaning:      'bg-teal-100 text-teal-700',
+  miscellaneous: 'bg-gray-100 text-gray-500',
+};
+
+const paymentStyle = {
+  cash:             'bg-green-50 text-green-600',
+  'bank transfer':  'bg-blue-50 text-blue-600',
+  POS:              'bg-purple-50 text-purple-600',
+  'mobile payment': 'bg-orange-50 text-orange-600',
+};
+
+const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePath = '/admin/expenses' }) => {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  useEffect(() => {
-    getExpenses();
-  }, [getExpenses]);
-
-    //pagination
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const expensePerPage = 11;
-  const indexOfLastExpense = currentPage * expensePerPage;
-  const indexOfFirstExpense = indexOfLastExpense - expensePerPage;
-  const currentExpense = expenses.slice(indexOfFirstExpense, indexOfLastExpense);
-  const totalPages = Math.ceil(expenses.length / expensePerPage);
+  const perPage = 12;
 
+  useEffect(() => { getExpenses(); }, [getExpenses]);
 
-  const handleEdit = (expense) => {
-    setSelectedExpense(expense);
-    setShowEditModal(true);
-  };
+  const filtered = useMemo(() => {
+    return expenses.filter(e => {
+      const matchSearch = (e.title || '').toLowerCase().includes(search.toLowerCase()) ||
+                          (e.paidTo || '').toLowerCase().includes(search.toLowerCase());
+      const matchCat = categoryFilter === 'all' || e.category === categoryFilter;
+      return matchSearch && matchCat;
+    });
+  }, [expenses, search, categoryFilter]);
 
-  const handleDelete = (expense) => {
-    setSelectedExpense(expense);
-    setShowDeleteModal(true);
-  };
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
+  const stats = useMemo(() => {
+    const now = new Date();
+    const thisMonth = expenses.filter(e => {
+      const d = new Date(e.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const max = expenses.reduce((a, b) => (b.amount > a.amount ? b : a), { amount: 0 });
+    return {
+      total: expenses.reduce((s, e) => s + e.amount, 0),
+      count: expenses.length,
+      thisMonth: thisMonth.reduce((s, e) => s + e.amount, 0),
+      highest: max,
+    };
+  }, [expenses]);
+
+  const handleEdit = (e) => { setSelectedExpense(e); setShowEditModal(true); };
+  const handleDelete = (e) => { setSelectedExpense(e); setShowDeleteModal(true); };
   const confirmDelete = async () => {
     await deleteExpense(selectedExpense._id);
     setShowDeleteModal(false);
@@ -40,83 +72,169 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-[1200px] mx-auto h-[90%]">
-      <h2 className="text-xl font-bold mb-4">Expense History</h2>
+    <div className="max-w-[1200px] mx-auto space-y-5">
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <div className="overflow-x-auto h-[80vh]">
-          <table className="min-w-full table-auto border border-gray-200 text-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Expenses</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{expenses.length} records total</p>
+        </div>
+        <Link
+          to={`${basePath}/add`}
+          className="flex items-center gap-2 bg-secondary hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          <FaPlus className="text-xs" /> Add Expense
+        </Link>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Spent',       value: `₦${stats.total.toLocaleString()}`,          color: 'border-red-500',    textColor: 'text-red-600' },
+          { label: 'Transactions',      value: stats.count,                                   color: 'border-blue-500',   textColor: 'text-blue-600' },
+          { label: 'This Month',        value: `₦${stats.thisMonth.toLocaleString()}`,        color: 'border-orange-500', textColor: 'text-orange-600' },
+          { label: 'Largest Expense',   value: `₦${stats.highest.amount.toLocaleString()}`,  color: 'border-purple-500', textColor: 'text-purple-600' },
+        ].map(({ label, value, color, textColor }) => (
+          <div key={label} className={`bg-white rounded-xl shadow-sm p-4 border-l-4 ${color}`}>
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{label}</p>
+            <p className={`text-2xl font-bold mt-1 ${textColor}`}>{value}</p>
+            {label === 'Largest Expense' && stats.highest.title && (
+              <p className="text-xs text-gray-400 mt-0.5 truncate">{stats.highest.title}</p>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Search + Filter */}
+      <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-3 items-center">
+        <div className="relative flex-1 min-w-[200px]">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+          <input
+            type="text"
+            placeholder="Search by title or paid to..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => { setCategoryFilter(cat); setCurrentPage(1); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition cursor-pointer ${
+                categoryFilter === cat ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {cat === 'all' ? 'All' : cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div className="animate-spin h-8 w-8 border-4 border-secondary border-t-transparent rounded-full mb-3"></div>
+            <p className="text-sm">Loading expenses...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500 text-sm">{error}</div>
+        ) : paginated.length === 0 ? (
+          <div className="text-center py-20 text-gray-400">
+            <FaReceipt className="text-5xl mx-auto mb-3 opacity-30" />
+            <p className="font-medium">No expenses found</p>
+            <p className="text-sm mt-1">Try adjusting your search or filter</p>
+          </div>
+        ) : (
+          <table className="min-w-full text-sm">
             <thead>
-              <tr className="bg-secondary-100 text-secondary text-left">
-                <th className="py-2 px-4 border-b">Title</th>
-                <th className="py-2 px-4 border-b">Amount</th>
-                <th className="py-2 px-4 border-b">Category</th>
-                <th className="py-2 px-4 border-b">Payment</th>
-                <th className="py-2 px-4 border-b">Paid To</th>
-                <th className="py-2 px-4 border-b">Date</th>
-                <th className="py-2 px-4 border-b">Actions</th>
+              <tr className="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500 font-semibold">
+                <th className="py-3 px-5 text-left">Title</th>
+                <th className="py-3 px-4 text-right">Amount</th>
+                <th className="py-3 px-4 text-left">Category</th>
+                <th className="py-3 px-4 text-left">Payment</th>
+                <th className="py-3 px-4 text-left">Paid To</th>
+                <th className="py-3 px-4 text-left">Date</th>
+                <th className="py-3 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {currentExpense.map((e, index) => (
-                <tr key={e._id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-primary-100'} hover:bg-gray-100`}>
-                  <td className="py-4 px-4">{e.title}</td>
-                  <td className="py-4 px-4">₦{e.amount}</td>
-                  <td className="py-4 px-4">{e.category}</td>
-                  <td className="py-4 px-4">{e.paymentMethod}</td>
-                  <td className="py-4 px-4">{e.paidTo}</td>
-                  <td className="py-4 px-4">{new Date(e.date).toLocaleDateString('en-CA', { timeZone: 'UTC' })}</td>
-                   
-                  <td className="py-4 px-4 flex gap-2">
-                    <button onClick={() => handleEdit(e)} className="text-green-600"><FaEdit /></button>
-                    <button onClick={() => handleDelete(e)} className="text-red-600"><FaTrash /></button>
+            <tbody className="divide-y divide-gray-100">
+              {paginated.map(e => (
+                <tr key={e._id} className="hover:bg-gray-50 transition">
+                  <td className="py-3.5 px-5">
+                    <p className="font-semibold text-gray-800">{e.title}</p>
+                    {e.note && <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[180px]">{e.note}</p>}
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-bold text-gray-800">
+                    ₦{e.amount.toLocaleString()}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className={`capitalize text-xs px-2 py-1 rounded-full font-medium ${categoryStyle[e.category] || 'bg-gray-100 text-gray-500'}`}>
+                      {e.category}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className={`capitalize text-xs px-2 py-1 rounded-full font-medium ${paymentStyle[e.paymentMethod] || 'bg-gray-100 text-gray-500'}`}>
+                      {e.paymentMethod}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-gray-600 text-sm">{e.paidTo || '—'}</td>
+                  <td className="py-3.5 px-4 text-gray-500 text-sm whitespace-nowrap">
+                    {new Date(e.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => handleEdit(e)} className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition cursor-pointer" title="Edit">
+                        <FaEdit />
+                      </button>
+                      <button onClick={() => handleDelete(e)} className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition cursor-pointer" title="Delete">
+                        <FaTrash />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        )}
 
-           {/* pagination */}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+            <p>Showing {(currentPage - 1) * perPage + 1}–{Math.min(currentPage * perPage, filtered.length)} of {filtered.length}</p>
+            <div className="flex gap-1">
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition">←</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(pg => (
+                <button key={pg} onClick={() => setCurrentPage(pg)} className={`px-3 py-1 rounded-lg border transition ${currentPage === pg ? 'bg-secondary text-white border-secondary' : 'border-gray-200 hover:bg-gray-50'}`}>{pg}</button>
+              ))}
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition">→</button>
+            </div>
+          </div>
+        )}
+      </div>
 
-          {totalPages > 1 && (
-                <div className="flex justify-center mt-4 space-x-2 ">
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index + 1}
-                      onClick={() => setCurrentPage(index + 1)}
-                      className={`px-3 py-1 rounded cursor-pointer ${
-                        currentPage === index + 1
-                          ? 'bg-secondary text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-        </div>
-      )}
-
-      {/* Modals */}
-      <EditExpense
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        expense={selectedExpense}
-      />
+      <EditExpense isOpen={showEditModal} onClose={() => setShowEditModal(false)} expense={selectedExpense} />
 
       <GeneralModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
-        <div className="p-4">
-          <h2 className="text-lg font-bold text-red-600 mb-4">Confirm Delete</h2>
-          <p>Are you sure you want to delete this expense?</p>
-          <div className="mt-6 flex justify-end gap-4">
-            <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            <button onClick={confirmDelete} className="bg-red-600 text-white px-4 py-2 rounded">Yes, Delete</button>
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+              <FaTrash className="text-red-600" />
+            </div>
+            <div>
+              <h2 className="font-bold text-gray-800">Delete Expense</h2>
+              <p className="text-xs text-gray-500">This cannot be undone</p>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mb-6">
+            Delete <strong>{selectedExpense?.title}</strong> — ₦{selectedExpense?.amount?.toLocaleString()}?
+          </p>
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm cursor-pointer">Cancel</button>
+            <button onClick={confirmDelete} className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm cursor-pointer">Delete</button>
           </div>
         </div>
       </GeneralModal>
