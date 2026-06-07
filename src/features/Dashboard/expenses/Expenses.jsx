@@ -48,21 +48,6 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePa
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-  const stats = useMemo(() => {
-    const now = new Date();
-    const thisMonth = expenses.filter(e => {
-      const d = new Date(e.date);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-    const max = expenses.reduce((a, b) => (b.amount > a.amount ? b : a), { amount: 0 });
-    return {
-      total: expenses.reduce((s, e) => s + e.amount, 0),
-      count: expenses.length,
-      thisMonth: thisMonth.reduce((s, e) => s + e.amount, 0),
-      highest: max,
-    };
-  }, [expenses]);
-
   const handleEdit = (e) => { setSelectedExpense(e); setShowEditModal(true); };
   const handleDelete = (e) => { setSelectedExpense(e); setShowDeleteModal(true); };
   const confirmDelete = async () => {
@@ -86,24 +71,6 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePa
         >
           <FaPlus className="text-xs" /> Add Expense
         </Link>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Total Spent',       value: `₦${stats.total.toLocaleString()}`,          color: 'border-red-500',    textColor: 'text-red-600' },
-          { label: 'Transactions',      value: stats.count,                                   color: 'border-blue-500',   textColor: 'text-blue-600' },
-          { label: 'This Month',        value: `₦${stats.thisMonth.toLocaleString()}`,        color: 'border-orange-500', textColor: 'text-orange-600' },
-          { label: 'Largest Expense',   value: `₦${stats.highest.amount.toLocaleString()}`,  color: 'border-purple-500', textColor: 'text-purple-600' },
-        ].map(({ label, value, color, textColor }) => (
-          <div key={label} className={`bg-white rounded-xl shadow-sm p-4 border-l-4 ${color}`}>
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{label}</p>
-            <p className={`text-2xl font-bold mt-1 ${textColor}`}>{value}</p>
-            {label === 'Largest Expense' && stats.highest.title && (
-              <p className="text-xs text-gray-400 mt-0.5 truncate">{stats.highest.title}</p>
-            )}
-          </div>
-        ))}
       </div>
 
       {/* Search + Filter */}
