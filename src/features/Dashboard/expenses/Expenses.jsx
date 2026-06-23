@@ -4,9 +4,19 @@ import { Link } from 'react-router-dom';
 import { getExpenses, deleteExpense } from '../../../store/actions/expenseActions';
 import EditExpense from './EditExpense';
 import GeneralModal from '../../../components/common/GeneralModal';
-import { FaEdit, FaTrash, FaPlus, FaSearch, FaReceipt } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaSearch, FaReceipt, FaWallet, FaCalendarAlt, FaChartBar, FaTag } from 'react-icons/fa';
 
 const CATEGORIES = ['all', 'utilities', 'logistics', 'salary', 'rent', 'maintenance', 'cleaning', 'miscellaneous'];
+
+const categoryColor = {
+  utilities:     '#3b82f6',
+  logistics:     '#f97316',
+  salary:        '#22c55e',
+  rent:          '#a855f7',
+  maintenance:   '#eab308',
+  cleaning:      '#14b8a6',
+  miscellaneous: '#9ca3af',
+};
 
 const categoryStyle = {
   utilities:     'bg-blue-100 text-blue-700',
@@ -45,6 +55,19 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePa
     });
   }, [expenses, search, categoryFilter]);
 
+  const summary = useMemo(() => {
+    const total = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+    const now = new Date();
+    const thisMonth = expenses
+      .filter(e => { const d = new Date(e.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })
+      .reduce((sum, e) => sum + (e.amount || 0), 0);
+    const avg = expenses.length ? total / expenses.length : 0;
+    const byCategory = {};
+    expenses.forEach(e => { byCategory[e.category] = (byCategory[e.category] || 0) + (e.amount || 0); });
+    const topCat = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
+    return { total, thisMonth, avg, byCategory, topCat };
+  }, [expenses]);
+
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
@@ -72,6 +95,75 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePa
           <FaPlus className="text-xs" /> Add Expense
         </Link>
       </div>
+
+      {/* Summary Cards */}
+      {!loading && expenses.length > 0 && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                <FaWallet className="text-red-500" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-medium">Total Spent</p>
+                <p className="text-lg font-bold text-gray-800">₦{summary.total.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <FaCalendarAlt className="text-blue-500" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-medium">This Month</p>
+                <p className="text-lg font-bold text-gray-800">₦{summary.thisMonth.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                <FaChartBar className="text-purple-500" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-medium">Avg per Entry</p>
+                <p className="text-lg font-bold text-gray-800">₦{Math.round(summary.avg).toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                <FaTag className="text-green-500" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-medium">Top Category</p>
+                <p className="text-base font-bold text-gray-800 capitalize">{summary.topCat?.[0] || '—'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Breakdown */}
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Spend by Category</p>
+            <div className="space-y-2">
+              {Object.entries(summary.byCategory)
+                .sort((a, b) => b[1] - a[1])
+                .map(([cat, amt]) => {
+                  const pct = summary.total ? Math.round((amt / summary.total) * 100) : 0;
+                  return (
+                    <div key={cat} className="flex items-center gap-3">
+                      <span className="text-xs text-gray-500 capitalize w-24 shrink-0">{cat}</span>
+                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%`, backgroundColor: categoryColor[cat] || '#9ca3af' }}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-600 w-24 text-right">₦{amt.toLocaleString()}</span>
+                      <span className="text-xs text-gray-400 w-8 text-right">{pct}%</span>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search + Filter */}
       <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-3 items-center">

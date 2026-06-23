@@ -6,7 +6,7 @@ import EditInventory from './EditInventory';
 import GeneralModal from '../../../components/common/GeneralModal';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaBoxOpen } from 'react-icons/fa';
 
-const CATEGORIES = ['all', 'alcoholic drinks', 'non-alcoholic drinks', 'beverages', 'food items', 'toiletries'];
+const CATEGORIES = ['all', 'alcoholic drinks', 'non-alcoholic drinks', 'beverages', 'food items', 'toiletries', 'snacks'];
 
 const StatusBadge = ({ quantity, reorderLevel }) => {
   if (quantity === 0)

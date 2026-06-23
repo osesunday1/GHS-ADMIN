@@ -10,6 +10,7 @@ const CATEGORIES = [
   { value: 'beverages', label: 'Beverages' },
   { value: 'food items', label: 'Food Items' },
   { value: 'toiletries', label: 'Toiletries' },
+  { value: 'snacks', label: 'Snacks' },
 ];
 
 const emptyForm = {

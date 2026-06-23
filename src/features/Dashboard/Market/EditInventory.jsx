@@ -9,6 +9,7 @@ const CATEGORIES = [
   { value: 'beverages', label: 'Beverages' },
   { value: 'food items', label: 'Food Items' },
   { value: 'toiletries', label: 'Toiletries' },
+  { value: 'snacks', label: 'Snacks' },
 ];
 
 const inputClass = "w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition";
