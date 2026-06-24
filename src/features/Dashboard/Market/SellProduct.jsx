@@ -1,18 +1,54 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { connect } from 'react-redux';
 import { removeMultipleStock } from '../../../store/actions/stockActions';
 import { getProducts } from '../../../store/actions/inventoryActions';
 import { getGuests } from '../../../store/actions/guestActions';
-import { FaPlus, FaTrash, FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaCheckCircle, FaShoppingCart, FaTimes, FaSearch } from 'react-icons/fa';
 
 const emptyEntry = () => ({ productId: '', quantity: '', note: '' });
 
 const SellProduct = ({ products, guests, removeMultipleStock, getProducts, getGuests }) => {
   const [customerName, setCustomerName] = useState('');
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [guestSearch, setGuestSearch] = useState('');
+  const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   const [entries, setEntries] = useState([emptyEntry()]);
   const [status, setStatus] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const guestRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (guestRef.current && !guestRef.current.contains(e.target)) {
+        setShowGuestDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredGuests = useMemo(() => {
+    const q = guestSearch.toLowerCase();
+    return guests.filter(g =>
+      `${g.firstName} ${g.lastName}`.toLowerCase().includes(q) ||
+      (g.phone && g.phone.includes(q))
+    );
+  }, [guests, guestSearch]);
+
+  const handleSelectGuest = (g) => {
+    const name = `${g.firstName} ${g.lastName}`;
+    setSelectedGuest(g);
+    setCustomerName(name);
+    setGuestSearch(name);
+    setShowGuestDropdown(false);
+  };
+
+  const handleClearGuest = () => {
+    setSelectedGuest(null);
+    setCustomerName('');
+    setGuestSearch('');
+  };
 
   useEffect(() => { getProducts(); getGuests(); }, [getProducts, getGuests]);
 
@@ -63,6 +99,8 @@ const SellProduct = ({ products, guests, removeMultipleStock, getProducts, getGu
     try {
       await removeMultipleStock({ customerName, products: entries });
       setCustomerName('');
+      setSelectedGuest(null);
+      setGuestSearch('');
       setEntries([emptyEntry()]);
       setStatus('success');
     } catch (err) {
@@ -100,19 +138,60 @@ const SellProduct = ({ products, guests, removeMultipleStock, getProducts, getGu
           {/* Guest Selection */}
           <div className="bg-white rounded-xl shadow-sm p-5">
             <label className="block text-sm font-semibold text-gray-700 mb-2">Guest / Customer</label>
-            <select
-              value={customerName}
-              onChange={e => setCustomerName(e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-              required
-            >
-              <option value="">— Select a guest —</option>
-              {guests.map(g => (
-                <option key={g._id} value={`${g.firstName} ${g.lastName}`}>
-                  {g.firstName} {g.lastName}
-                </option>
-              ))}
-            </select>
+
+            {selectedGuest ? (
+              <div className="flex items-center gap-3 px-3 py-2.5 border border-secondary rounded-lg bg-secondary/5">
+                <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {selectedGuest.firstName?.[0]}{selectedGuest.lastName?.[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 truncate">{selectedGuest.firstName} {selectedGuest.lastName}</p>
+                  {selectedGuest.phone && <p className="text-xs text-gray-400">{selectedGuest.phone}</p>}
+                </div>
+                <button type="button" onClick={handleClearGuest} className="text-gray-400 hover:text-red-500 transition cursor-pointer">
+                  <FaTimes />
+                </button>
+              </div>
+            ) : (
+              <div className="relative" ref={guestRef}>
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                  <input
+                    type="text"
+                    value={guestSearch}
+                    onChange={e => { setGuestSearch(e.target.value); setShowGuestDropdown(true); }}
+                    onFocus={() => setShowGuestDropdown(true)}
+                    placeholder="Search guest by name or phone..."
+                    className="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                    required={!customerName}
+                  />
+                </div>
+                {showGuestDropdown && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+                    {filteredGuests.length === 0 ? (
+                      <p className="text-sm text-gray-400 px-4 py-3 text-center">No guests found</p>
+                    ) : (
+                      filteredGuests.map(g => (
+                        <button
+                          key={g._id}
+                          type="button"
+                          onClick={() => handleSelectGuest(g)}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left transition cursor-pointer"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-secondary/20 text-secondary flex items-center justify-center text-xs font-bold flex-shrink-0">
+                            {g.firstName?.[0]}{g.lastName?.[0]}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">{g.firstName} {g.lastName}</p>
+                            {g.phone && <p className="text-xs text-gray-400">{g.phone}</p>}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Product Entries */}
