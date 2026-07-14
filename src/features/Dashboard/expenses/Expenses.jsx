@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { getExpenses, deleteExpense } from '../../../store/actions/expenseActions';
 import EditExpense from './EditExpense';
 import GeneralModal from '../../../components/common/GeneralModal';
-import { FaEdit, FaTrash, FaPlus, FaSearch, FaReceipt, FaWallet, FaCalendarAlt, FaChartBar, FaTag } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaSearch, FaReceipt, FaWallet, FaCalendarAlt, FaChartBar, FaTag, FaTimes } from 'react-icons/fa';
 
 const CATEGORIES = ['all', 'utilities', 'logistics', 'salary', 'rent', 'maintenance', 'cleaning', 'miscellaneous'];
 
@@ -35,41 +35,70 @@ const paymentStyle = {
   'mobile payment': 'bg-orange-50 text-orange-600',
 };
 
+const formatLocalDate = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+const getCurrentMonthStart = () => {
+  const now = new Date();
+  return formatLocalDate(new Date(now.getFullYear(), now.getMonth(), 1));
+};
+
+const getCurrentMonthEnd = () => {
+  const now = new Date();
+  return formatLocalDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+};
+
 const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePath = '/admin/expenses' }) => {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [dateFrom, setDateFrom] = useState(getCurrentMonthStart);
+  const [dateTo, setDateTo] = useState(getCurrentMonthEnd);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 12;
 
   useEffect(() => { getExpenses(); }, [getExpenses]);
 
-  const filtered = useMemo(() => {
+  const dateFiltered = useMemo(() => {
+    if (!dateFrom && !dateTo) return expenses;
     return expenses.filter(e => {
+      const d = new Date(e.date);
+      if (dateFrom && d < new Date(dateFrom)) return false;
+      if (dateTo && d > new Date(`${dateTo}T23:59:59`)) return false;
+      return true;
+    });
+  }, [expenses, dateFrom, dateTo]);
+
+  const filtered = useMemo(() => {
+    return dateFiltered.filter(e => {
       const matchSearch = (e.title || '').toLowerCase().includes(search.toLowerCase()) ||
                           (e.paidTo || '').toLowerCase().includes(search.toLowerCase());
       const matchCat = categoryFilter === 'all' || e.category === categoryFilter;
       return matchSearch && matchCat;
     });
-  }, [expenses, search, categoryFilter]);
+  }, [dateFiltered, search, categoryFilter]);
 
   const summary = useMemo(() => {
-    const total = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+    const total = dateFiltered.reduce((sum, e) => sum + (e.amount || 0), 0);
     const now = new Date();
-    const thisMonth = expenses
+    const thisMonth = dateFiltered
       .filter(e => { const d = new Date(e.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })
       .reduce((sum, e) => sum + (e.amount || 0), 0);
-    const avg = expenses.length ? total / expenses.length : 0;
+    const avg = dateFiltered.length ? total / dateFiltered.length : 0;
     const byCategory = {};
-    expenses.forEach(e => { byCategory[e.category] = (byCategory[e.category] || 0) + (e.amount || 0); });
+    dateFiltered.forEach(e => { byCategory[e.category] = (byCategory[e.category] || 0) + (e.amount || 0); });
     const topCat = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
     return { total, thisMonth, avg, byCategory, topCat };
-  }, [expenses]);
+  }, [dateFiltered]);
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const handleDateFrom = (v) => { setDateFrom(v); setCurrentPage(1); };
+  const handleDateTo = (v) => { setDateTo(v); setCurrentPage(1); };
+  const clearDateRange = () => { setDateFrom(''); setDateTo(''); setCurrentPage(1); };
 
   const handleEdit = (e) => { setSelectedExpense(e); setShowEditModal(true); };
   const handleDelete = (e) => { setSelectedExpense(e); setShowDeleteModal(true); };
@@ -176,6 +205,33 @@ const Expenses = ({ expenses, loading, error, getExpenses, deleteExpense, basePa
             onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
             className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <FaCalendarAlt className="text-gray-400 text-xs shrink-0" />
+          <input
+            type="date"
+            value={dateFrom}
+            max={dateTo || undefined}
+            onChange={e => handleDateFrom(e.target.value)}
+            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+          />
+          <span className="text-gray-400 text-xs">to</span>
+          <input
+            type="date"
+            value={dateTo}
+            min={dateFrom || undefined}
+            onChange={e => handleDateTo(e.target.value)}
+            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={clearDateRange}
+              title="Clear date range"
+              className="p-2 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 transition cursor-pointer"
+            >
+              <FaTimes className="text-xs" />
+            </button>
+          )}
         </div>
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map(cat => (
